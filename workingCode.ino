@@ -1,7 +1,14 @@
-// Author Isaac Yeboah
+// Author Isaac Yeboah 
+//https://github.com/kojoYeboah53i/smartBIN
 // Could be modified or redistibuted as long as
 // all rights resevered under the opensource license
 
+
+
+
+
+
+//API URL
 //http://smartbin-app-1.herokuapp.com/updatebin?bin_id=1
 //http://smartbin-app-1.herokuapp.com/updatebin?bin_id=2//
 
@@ -17,30 +24,27 @@
 #endif
 
 #include "SoftwareSerial.h"
-
+SoftwareSerial gsm_(10, 11);
 class Smartbin_1
 
 {
 public:
   Smartbin_1(int pin1, int pin2, int pin3, int pin4, String bat_status); //constructor
   ~Smartbin_1();
-  void text(String btt);
+ 
   float binStatus();
   bool gsmConn();
-  void boot_();
-  bool conn_server(String message);
+  void boot_(String bat_status);
+  bool conn_server(String message, String value);
 
-  void Blink_2();
+  
     int wait = 2000;
     String gsmData;
 
     String gsmConnData = "";
     String gsmHttpData ="";
 
-  
-
-private:
-  int pin_Gled;
+    int pin_Gled;
   int pin_Rled;
   int pin_echo;
   int pin_tripn;
@@ -51,6 +55,9 @@ private:
   String id_value; 
     long duration;
     float distance;
+
+private:
+
 };
 
 #endif
@@ -61,7 +68,7 @@ private:
 Smartbin_1::Smartbin_1(int pin1, int pin2, int pin3, int pin4, String bat_status) : pin_Gled(pin1), pin_Rled(pin2), pin_tripn(pin3), pin_echo(pin4), battery(bat_status)
 {
 
-  //C::C( double a, double b, double c): X(a), Y(b), Z(c)
+
 
   pinMode(pin_Gled, OUTPUT);
   pinMode(pin_Rled, OUTPUT);
@@ -80,23 +87,8 @@ Smartbin_1::~Smartbin_1(void)
   // Serial.println("arduino ram is freed....  ");
 }
 
-void Smartbin_1::text(String btt)
-{
-  Serial.println("kojo is a genius at programming computers ");
-  Serial.println(" ");
-  battery = "low battery";
-  Serial.println(battery);
-}
 
-void Smartbin_1::Blink_2()
-{
 
-  digitalWrite(_pin, HIGH);
-  delay(3000);
-  digitalWrite(_pin, LOW);
-  delay(100);
-  //  Serial.println("Inside function called from libuary! ");
-}
 
 //binStatus status definiftion
 float Smartbin_1::binStatus(){
@@ -131,8 +123,8 @@ void Smartbin_1::boot_(String bat_status)
    
   delay(5);
     conn_server("The arduino is on", "value");
-    digitalWrite(powerLed, HIGH);
-    conn_server(battery);
+   
+   
 }
 
 bool Smartbin_1::gsmConn()
@@ -142,7 +134,7 @@ bool Smartbin_1::gsmConn()
       delay(10000);
      while (gsm_.available())
   {
-    gsmData(gsm_.read());
+    gsmData += (gsm_.read());
   }
       gsm_.println("AT+CMEE=2");
     delay(wait);
@@ -180,8 +172,7 @@ bool Smartbin_1::gsmConn()
   {
     gsmData += (gsm_.read());
   }
-  gsm_.println("AT+SAPBR=2,1");
-  ||
+  gsm_.println("AT+SAPBR=2,1");  
       delay(10000);
   while (gsm_.available())
   {
@@ -198,7 +189,7 @@ bool Smartbin_1::gsmConn()
   //Serial.println(gsmData)  for troublshooting
 }
 
-bool Smartbin_1::conn_server(String message, value)
+bool Smartbin_1::conn_server(String message, String value)
 {
   String gsmHttpData_="";
   server_message= message;
@@ -208,30 +199,30 @@ bool Smartbin_1::conn_server(String message, value)
   delay(wait);
   while (gsm_.available())
   {
-    gsmHttpData(gsm_.read());
+    gsmHttpData += (gsm_.read());
   }
 
-  gsm_.print(("AT+HTTPPARA=\"URL\",\"http://ratty53iadu.000webhostapp.com/smartbin_talk.php?"+value+"=");
+  gsm_.print(("AT+HTTPPARA=\"URL\",\"http://ratty53iadu.000webhostapp.com/smartbin_talk.php?"+value+"="));
   gsm_.print(server_message);
   gsm_.println("\"");
   delay(wait);
   while (gsm_.available())
   {
-    gsmHttpData(gsm_.read());
+    gsmHttpData += (gsm_.read());
   }
 
   gsm_.println("AT+HTTPACTION=0");
   delay(wait);
   while (gsm_.available())
   {
-    gsmHttpData_(gsm_.read());
+    gsmHttpData_ += (gsm_.read());
   }
   
   gsm_.println("AT+HTTPTERM");
   delay(wait);
   while (gsm_.available())
   {
-    gsmHttpData(gsm_.read());
+    gsmHttpData+= (gsm_.read());
   }
 
   if(gsmHttpData_.indexOf("OK") >0 ){
@@ -243,7 +234,7 @@ bool Smartbin_1::conn_server(String message, value)
     delay(10000);
      while (gsm_.available())
   {
-    gsmHttpData(gsm_.read());
+    gsmHttpData += (gsm_.read());
   }
 
   //uncomment this line to debug
@@ -252,7 +243,7 @@ bool Smartbin_1::conn_server(String message, value)
 
 
 //application
-SoftwareSerial gsm_(10, 11);
+
 Smartbin_1 dustbin_1(13, 4, 6, 9, "");
 
 void setup()
@@ -262,33 +253,20 @@ void setup()
   
   gsm_.begin(38400);
   
-  dustbin_1.text("");
+
   digitalWrite(dustbin_1.pin_Gled, HIGH);
   digitalWrite(dustbin_1.pin_Rled, LOW);
 
   }
 
-  Serial.println("the only stirng in setup  ");
 
-}
+
+
+
+
 
 void loop()
 {
-
-  dustbin_1.Blink_2();
-
-  delay(2000);
-
-  dustbin_1.Blink_2();
-
-  delay(2000);
-
-  dustbin_1.Blink_2();
-
-  delay(2000);
-
-
-
 
     if (!dustbin_1.gsmConn()){
       Serial.println("Connection to server failed");
